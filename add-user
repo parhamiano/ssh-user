@@ -1,5 +1,5 @@
 if [ $(id -u) -eq 0 ]; then
-	read -p "Enter us ername : " username
+	read -p "Enter username : " username
 	 egrep "^$username" /etc/passwd >/dev/null
 	  if [ $? -eq 0 ]; then
 		echo -e "user $username exists!"
@@ -11,7 +11,7 @@ if [ $(id -u) -eq 0 ]; then
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
-		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $traffic \*10000000 -j ACCEPT
+		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $traffic\*10000000 -j ACCEPT
 		[ $? -eq 0 ] &&  echo -e "user added :) "
     echo -e "----------------------------------------------"
     echo -e "username : "$username
