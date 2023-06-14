@@ -4,7 +4,7 @@ if [ $(id -u) -eq 0 ]; then
 	if [ $? -eq 0 ]; then
 		echo "$username exists!"
 		exit 1
-	else
+	fi
 	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
 	read -p "Enter traffic (GB) : " traffic 
 	read -p "Enter password : " password
@@ -20,7 +20,7 @@ if [ $(id -u) -eq 0 ]; then
     echo -e "traffic (GB) : "$traffic
     echo -e "password : "$password
     echo -e "----------------------------------------------" || echo "Failed to add a user!"
-	fi
+    
 else
 	echo "Only root may add a user to the system."
 	exit 2
