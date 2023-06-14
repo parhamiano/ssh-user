@@ -7,12 +7,20 @@ if [ $(id -u) -eq 0 ]; then
 	  fi
 	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
 	read -p "Enter traffic (GB) : " traffic  
+	
+	prefix=1000000000
+	gb=$((traffic * prefix))
+	
+	if [$traffic -eq 0]
+	then
+	gb=$((1000*prefix))
+	fi
+	
 	read -p "Enter password : " password
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
-		prefix=1000000000
-		gb=$((traffic * prefix))
+		
 		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $gb -j ACCEPT
 		[ $? -eq 0 ] &&  echo -e "user added :) "
     echo -e "----------------------------------------------"
