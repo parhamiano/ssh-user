@@ -5,8 +5,8 @@ if [ $(id -u) -eq 0 ]; then
 		echo "user $username exists!"
 		exit 1
 	fi
-	read -p "E nter expire date ( y-m-d ) example 2023-06-10 : " date
-	read -p "E nter traffic (GB) : " traffic 
+	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
+	read -p "Enter traffic (GB) : " traffic 
 	if [ $traffic = "" ]; then
 	$traffic = 100000000
 	fi
