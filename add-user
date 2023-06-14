@@ -13,10 +13,10 @@ if [ $(id -u) -eq 0 ]; then
 		usermod -e  "$date" "$username"
 		[ $? -eq 0 ] &&  echo -e "user added: "
     echo -e "----------------------------------------------"
-    echo -e "username:"
-    echo -e "expiry date:"
-    echo -e "traffic:"
-    echo -e "password:"
+    echo -e "username:"$username
+    echo -e "expiry date:"$date
+    echo -e "traffic:"$traffic
+    echo -e "password:"$password
     echo -e "----------------------------------------------" || echo "Failed to add a user!"
 	fi
 else
