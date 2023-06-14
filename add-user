@@ -2,7 +2,7 @@ if [ $(id -u) -eq 0 ]; then
 	read -p "Enter username : " username
 	read -p  "Enter expire date ( y-m-d ) example 2023-06-10 : " date
 	read -p "Internet traffic : " traffic
-	read -s -p "Enter password : " password
+	read -p "Enter password : " password
 	egrep "^$username" /etc/passwd >/dev/null
 	if [ $? -eq 0 ]; then
 		echo "$username exists!"
@@ -11,7 +11,13 @@ if [ $(id -u) -eq 0 ]; then
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
-		[ $? -eq 0 ] && echo "User has been added to system!" || echo "Failed to add a user!"
+		[ $? -eq 0 ] &&  echo -e "x-ui control menu usages: "
+    echo -e "----------------------------------------------"
+    echo -e "username:"
+    echo -e "expiry date"
+    echo -e "traffic"
+    echo -e "password"
+    echo -e "----------------------------------------------" || echo "Failed to add a user!"
 	fi
 else
 	echo "Only root may add a user to the system."
