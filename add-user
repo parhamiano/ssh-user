@@ -1,5 +1,5 @@
 if [ $(id -u) -eq 0 ]; then
-	read -p "E nter username : " username
+	read -p "Enter username : " username
 	egrep "^$username" /etc/passwd >/dev/null
 	if [ $? -eq 0 ]; then
 		echo "user $username exists!"
@@ -7,6 +7,9 @@ if [ $(id -u) -eq 0 ]; then
 	fi
 	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
 	read -p "Enter traffic (GB) : " traffic 
+	if [ $traffic == "" ]; then
+	$traffic = 100000000
+	fi
 	read -p "Enter password : " password
 
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
