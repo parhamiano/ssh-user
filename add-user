@@ -1,13 +1,14 @@
 if [ $(id -u) -eq 0 ]; then
 	read -p "E username : " username
-	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
-	read -p "Enter traffic (GB) : " traffic
-	read -p "Enter password : " password
 	egrep "^$username" /etc/passwd >/dev/null
 	if [ $? -eq 0 ]; then
 		echo "$username exists!"
 		exit 1
 	else
+	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
+	read -p "Enter traffic (GB) : " traffic 
+	read -p "Enter password : " password
+
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
