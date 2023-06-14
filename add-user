@@ -11,12 +11,12 @@ if [ $(id -u) -eq 0 ]; then
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
-		[ $? -eq 0 ] &&  echo -e "x-ui control menu usages: "
+		[ $? -eq 0 ] &&  echo -e "user added: "
     echo -e "----------------------------------------------"
     echo -e "username:"
-    echo -e "expiry date"
-    echo -e "traffic"
-    echo -e "password"
+    echo -e "expiry date:"
+    echo -e "traffic:"
+    echo -e "password:"
     echo -e "----------------------------------------------" || echo "Failed to add a user!"
 	fi
 else
