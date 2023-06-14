@@ -5,12 +5,12 @@ if [ $(id -u) -eq 0 ]; then
 		echo "user $username exists!"
 		exit 1
 	fi
-	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
-	read -p "Enter traffic (GB) : " traffic 
+	read -p "E nter expire date ( y-m-d ) example 2023-06-10 : " date
+	read -p "E nter traffic (GB) : " traffic 
 	if [ $traffic = "" ]; then
 	$traffic = 100000000
 	fi
-	read -p "Enter password : " password
+	read -p "E nter password : " password
 
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
