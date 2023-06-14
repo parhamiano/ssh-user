@@ -7,7 +7,7 @@ if [ $(id -u) -eq 0 ]; then
 	fi
 	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
 	read -p "Enter traffic (GB) : " traffic 
-	if [ $traffic -gt 0 ] then
+	if [ $traffic -gt 0 ]; then
 	$traffic=100000000
         fi
 	read -p "Enter password : " password
