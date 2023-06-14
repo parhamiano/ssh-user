@@ -1,5 +1,5 @@
 if [ $(id -u) -eq 0 ]; then
-	read -p "E username : " username
+	read -p "Enter username : " username
 	egrep "^$username" /etc/passwd >/dev/null
 	if [ $? -eq 0 ]; then
 		echo "$username exists!"
