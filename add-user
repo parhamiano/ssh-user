@@ -2,7 +2,7 @@ if [ $(id -u) -eq 0 ]; then
 	read -p "Enter username : " username
 	egrep "^$username" /etc/passwd >/dev/null
 	if [ $? -eq 0 ]; then
-		echo "$username exists!"
+		echo "user $username exists!"
 		exit 1
 	fi
 	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
