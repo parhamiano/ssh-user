@@ -1,7 +1,7 @@
 if [ $(id -u) -eq 0 ]; then
 	read -p "Enter username : " username
-	read -p  "Enter expire date ( y-m-d ) example 2023-06-10 : " date
-	read -p "Internet traffic (GB) : " traffic
+	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
+	read -p "Enter traffic (GB) : " traffic
 	read -p "Enter password : " password
 	egrep "^$username" /etc/passwd >/dev/null
 	if [ $? -eq 0 ]; then
@@ -11,7 +11,7 @@ if [ $(id -u) -eq 0 ]; then
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
-		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota 50000000000 -j ACCEPT
+		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $traffic × 1000000000 -j ACCEPT
 		[ $? -eq 0 ] &&  echo -e "user added :) "
     echo -e "----------------------------------------------"
     echo -e "username:"$username
