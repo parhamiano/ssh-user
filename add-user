@@ -1,22 +1,18 @@
 if [ $(id -u) -eq 0 ]; then
-	read -p "Enter username : " username
-	egrep "^$username" /etc/passwd >/dev/null
-	if [ $? -eq 0 ]; then
+	read -p "En ter username : " username
+	 egrep "^$username" /etc/passwd >/dev/null
+	  if [ $? -eq 0 ]; then
 		echo -e "user $username exists!"
 		exit 1
-	fi
+	  fi
 	read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
 	read -p "Enter traffic (GB) : " traffic 
-	 if test "$traffic" = ""
-           then
-	   $traffic=100000000
-         fi
+	    converted_traffic=$traffic *10000000
 	read -p "Enter password : " password
-
 		pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
 		useradd -m -p "$pass" "$username" --shell=/bin/false
 		usermod -e  "$date" "$username"
-		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $traffic -j ACCEPT
+		iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $converted_traffic -j ACCEPT
 		[ $? -eq 0 ] &&  echo -e "user added :) "
     echo -e "----------------------------------------------"
     echo -e "username : "$username
