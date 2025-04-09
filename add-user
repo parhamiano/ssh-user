@@ -12,7 +12,10 @@ add_user() {
     read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
     read -p "Enter traffic (GB) : " traffic  
     read -p "Enter password : " password
-    pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
+    
+    # ذخیره پسورد به صورت ساده (بدون رمزنگاری)
+    pass="$password"
+    
     useradd -m -p "$pass" "$username" --shell=/bin/false
     usermod -e  "$date" "$username"
     
@@ -28,27 +31,155 @@ add_user() {
         echo -e "traffic (GB) : $traffic"
         echo -e "password : $password"
         echo -e "----------------------------------------------"
+
+        # ذخیره‌سازی اطلاعات کاربر در فایل
+        echo "$username|$date|$traffic|$pass" >> user_data.txt
     else
         echo "Failed to add a user!"
     fi
 }
 
-# تابع برای نمایش کاربران (به جز کاربران خاص)
+# تابع برای نمایش کاربران با شماره
 show_users() {
-    echo "Current users (excluding system users):"
-    # استفاده از grep برای فیلتر کردن کاربران خاص
-    cut -d: -f1 /etc/passwd | grep -v -E "^(root|daemon|bin|sys|sync|games|man|lp|mail|news|uucp|proxy|www-data|backup|list|irc|_apt|nobody|systemd-network|systemd-timesync|dhcpcd|messagebus|syslog|systemd-resolve|tss|uuidd|sshd|pollinate|tcpdump|landscape|fwupd-refresh|polkitd)$"
+    echo "Additional user information (expiry date, traffic, password):"
+    
+    # نمایش کاربران به صورت شماره‌دار با استفاده از awk
+    awk '{print NR " " $0}' user_data.txt
 }
 
 # تابع برای حذف کاربر
 delete_user() {
-    read -p "Enter username to delete: " username
+    echo "Select a user to delete by number:"
+    show_users  # نمایش اطلاعات کاربران
+    
+    # گرفتن شماره کاربر برای حذف
+    read -p "Enter the number of the user to delete: " user_number
+
+    # استخراج نام کاربر از فایل user_data.txt بر اساس شماره انتخابی
+    username=$(sed -n "${user_number}p" user_data.txt | cut -d'|' -f1)
+
+    if [ -z "$username" ]; then
+        echo "Invalid number. Please try again."
+        return
+    fi
+
+    # حذف کاربر از سیستم
     userdel -r "$username"
     if [ $? -eq 0 ]; then
         echo "User $username has been deleted."
     else
         echo "Failed to delete user $username."
     fi
+
+    # حذف اطلاعات مربوط به کاربر از فایل user_data.txt
+    sed -i "${user_number}d" user_data.txt
+}
+
+# چک کردن اینکه آیا کاربر روت است
+if [ $(id -u) -eq 0 ]; then
+    PS3='Please select an option: '  # تنظیم پیام منو
+    options=("Add User" "Show Users" "Delete User" "Quit")
+    
+    select opt in "${options[@]}"
+    do
+        case $opt in
+            "Add User")
+                add_user
+                ;;
+            "Show Users")
+                show_users
+                ;;
+            "Delete User")
+                delete_user
+                ;;
+            "Quit")
+                echo "Exiting the script."
+                break
+                ;;
+            *)
+                echo "Invalid option. Please try again."
+                ;;
+        esac
+    done
+else
+    echo "Only root may add a user to the system."
+    exit 2
+fi
+#!/bin/bash
+
+# تابع برای اضافه کردن کاربر
+add_user() {
+    read -p "Enter username : " username
+    egrep "^$username" /etc/passwd >/dev/null
+    if [ $? -eq 0 ]; then
+        echo -e "user $username exists!"
+        exit 1
+    fi
+
+    read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
+    read -p "Enter traffic (GB) : " traffic  
+    read -p "Enter password : " password
+    
+    # ذخیره پسورد به صورت ساده (بدون رمزنگاری)
+    pass="$password"
+    
+    useradd -m -p "$pass" "$username" --shell=/bin/false
+    usermod -e  "$date" "$username"
+    
+    prefix=1000000000
+    gb=$((traffic * prefix))
+    iptables -A OUTPUT -p tcp -m owner --uid-owner $username -m quota --quota $gb -j ACCEPT
+    
+    if [ $? -eq 0 ]; then
+        echo -e "user added :) "
+        echo -e "----------------------------------------------"
+        echo -e "username : $username"
+        echo -e "expiry date : $date"
+        echo -e "traffic (GB) : $traffic"
+        echo -e "password : $password"
+        echo -e "----------------------------------------------"
+
+        # ذخیره‌سازی اطلاعات کاربر در فایل
+        echo "$username|$date|$traffic|$pass" >> user_data.txt
+    else
+        echo "Failed to add a user!"
+    fi
+}
+
+# تابع برای نمایش کاربران با شماره
+show_users() {
+    echo "Additional user information (expiry date, traffic, password):"
+    
+    # نمایش کاربران به صورت شماره‌دار با استفاده از awk
+    awk '{print NR " " $0}' user_data.txt
+}
+
+# تابع برای حذف کاربر
+delete_user() {
+    echo "Select a user to delete by number:"
+    show_users  # نمایش اطلاعات کاربران
+    
+    # گرفتن شماره کاربر برای حذف
+    read -p "Enter the number of the user to delete: " user_number
+
+    # استخراج نام کاربر از فایل user_data.txt بر اساس شماره انتخابی
+    username=$(sed -n "${user_number}p" user_data.txt | cut -d'|' -f1)
+
+    if [ -z "$username" ]; then
+        echo "Invalid number. Please try again."
+        return
+    fi
+
+    # حذف کاربر از سیستم
+    userdel -r "$username"
+    if [ $? -eq 0 ]; then
+        echo "User $username has been deleted."
+    else
+        echo "Failed to delete user $username."
+    fi
+
+    # حذف اطلاعات مربوط به کاربر از فایل user_data.txt
+    sed -i "${user_number}d" user_data.txt
 }
 
 # چک کردن اینکه آیا کاربر روت است
