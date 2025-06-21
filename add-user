@@ -11,13 +11,17 @@ add_user() {
 
     read -p "Enter expire date ( y-m-d ) example 2023-06-10 : " date
     read -p "Enter traffic (GB) : " traffic  
-    read -p "Enter password : " password
+    read -s -p "Enter password : " password
+    echo
+
+    # اضافه کردن کاربر بدون پسورد اولیه
+    useradd -m "$username" --shell=/bin/false
     
- 
+    # تنظیم پسورد کاربر با chpasswd
+    echo "$username:$password" | chpasswd
     
-    # اضافه کردن کاربر با پسورد رمزنگاری‌شده
-    useradd -m -p "$pass" "$username" --shell=/bin/false
-    usermod -e  "$date" "$username"
+    # تنظیم تاریخ انقضا
+    usermod -e "$date" "$username"
     
     prefix=1000000000
     gb=$((traffic * prefix))
@@ -29,11 +33,10 @@ add_user() {
         echo -e "username : $username"
         echo -e "expiry date : $date"
         echo -e "traffic (GB) : $traffic"
-        echo -e "password : $password"  # نمایش پسورد وارد شده
+        echo -e "password : ********"  # نمایش پسورد به جای واقعی برای امنیت
         echo -e "----------------------------------------------"
 
-        # ذخیره‌سازی اطلاعات کاربر در فایل
-        echo "$username|$date|$traffic|$password" >> user_data.txt  # ذخیره پسورد رمزنگاری‌شده
+        echo "$username|$date|$traffic|$password" >> user_data.txt
     else
         echo "Failed to add a user!"
     fi
